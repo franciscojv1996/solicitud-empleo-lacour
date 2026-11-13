@@ -1,0 +1,45 @@
+# Laravel / PHP
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+/.fleet
+/.phpunit.cache
+
+# Entorno y credenciales
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Archivos subidos por usuarios (DATOS PERSONALES)
+/storage/app/public/uploads/*
+
+# Dumps de base de datos (DATOS PERSONALES)
+*.sql
+*.sql.gz
+*.dump
+grupo_lacour.sql
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# Backups y temporales
+*.bak
+*.swp
+*~
