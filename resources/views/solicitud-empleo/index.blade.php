@@ -29,7 +29,15 @@
             </div>
         </header>
 
-        <form id="solicitudForm" enctype="multipart/form-data">
+        {{-- 
+            CORRECCIÓN DE ERRORES:
+            [Nivel Crítico] Falta de endpoint dinámico y token: Se añade data-url="{{ route('solicitud.store') }}" y directiva @csrf.
+            [Nivel Crítico] Bloqueo silencioso en móviles: Al usar un Stepper con 'display: none', los campos con atributo 'required'
+                            en pasos ocultos provocan "An invalid form control is not focusable" cancelando el envío.
+                            Solución: Se añade el atributo 'novalidate' para permitir el envío controlado vía JavaScript/AJAX.
+        --}}
+        <form id="solicitudForm" enctype="multipart/form-data" data-url="{{ route('solicitud.store') }}" novalidate>
+            @csrf
             <!-- SECCIÓN 1: DATOS DE LA SOLICITUD -->
             <fieldset class="form-step active">
                 <legend>Información del Cargo</legend>

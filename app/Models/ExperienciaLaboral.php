@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ExperienciaLaboral extends Model
 {
     protected $table = 'experiencia_laboral';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -15,5 +16,8 @@ class ExperienciaLaboral extends Model
         'cargo_desempenado', 'motivo_retiro', 'labores_realizadas',
     ];
 
-    public function solicitante() { return $this->belongsTo(Solicitante::class, 'solicitante_id'); }
+    public function solicitante()
+    {
+        return $this->belongsTo(Solicitante::class, 'solicitante_id');
+    }
 }

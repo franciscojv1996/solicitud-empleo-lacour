@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ReferenciaPersonal extends Model
 {
     protected $table = 'referencias_personales';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -14,5 +15,8 @@ class ReferenciaPersonal extends Model
         'telefono', 'ocupacion', 'tiempo_conocido',
     ];
 
-    public function solicitante() { return $this->belongsTo(Solicitante::class, 'solicitante_id'); }
+    public function solicitante()
+    {
+        return $this->belongsTo(Solicitante::class, 'solicitante_id');
+    }
 }

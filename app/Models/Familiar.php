@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Familiar extends Model
 {
     protected $table = 'familiares';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -14,5 +15,8 @@ class Familiar extends Model
         'cedula', 'fecha_nacimiento', 'edad',
     ];
 
-    public function solicitante() { return $this->belongsTo(Solicitante::class, 'solicitante_id'); }
+    public function solicitante()
+    {
+        return $this->belongsTo(Solicitante::class, 'solicitante_id');
+    }
 }

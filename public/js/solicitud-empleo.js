@@ -238,11 +238,16 @@
         addReferenceRow();
 
         // --- 5. Lógica para Descargar PDF ---
+        // CORRECCIÓN [Nivel Crítico]:
+        // Error: Apuntaba a 'public/doc/descargar_formulario.pdf'. En Laravel, 'public/' es el DocumentRoot,
+        //        por lo que causaba un error 404 (Not Found) al descargar.
+        // Solución: Usar la URL provista en el atributo 'data-pdf-url' del body o la ruta raíz '/doc/descargar_formulario.pdf'.
         document.getElementById('downloadBtn').addEventListener('click', () => {
-            window.location.href = 'public/doc/descargar_formulario.pdf';
+            const pdfUrl = document.body.dataset.pdfUrl || '/doc/descargar_formulario.pdf';
+            window.location.href = pdfUrl;
         });
 
-        // --- 6. Validación del Formulario ---
+        // --- 6. Validación y Envío del Formulario ---
         const form = document.getElementById('solicitudForm');
         
         form.addEventListener('submit', (e) => {
@@ -259,21 +264,71 @@
                 return;
             }
 
-            const formData = new FormData(document.getElementById('solicitudForm'));
+            // CORRECCIÓN [Nivel Crítico]:
+            // Error 1: fetch llamaba a 'backend/guardar_solicitud.php' (archivo inexistente de PHP nativo -> Error 404).
+            // Solución: Leer dinámicamente el endpoint del atributo data-url del formulario (route('solicitud.store')).
+            const targetUrl = form.getAttribute('data-url') || form.action || '/solicitud-empleo';
 
-            fetch('backend/guardar_solicitud.php', {
+            // CORRECCIÓN [Nivel Crítico]:
+            // Error 2: Faltaba el header 'Accept: application/json'. Sin este header, ante un error de validación (HTTP 422),
+            //          Laravel responde con una redirección HTTP 302 hacia '/', el fetch sigue la redirección y devuelve HTML,
+            //          lo que provocaba una excepción fatal: SyntaxError: Unexpected token '<' al hacer response.json().
+            // Solución: Añadir 'Accept': 'application/json' y el header de seguridad 'X-CSRF-TOKEN'.
+            const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+
+            const formData = new FormData(form);
+
+            // Deshabilitar botón durante el envío para evitar envíos dobles accidentales
+            const submitBtn = form.querySelector('.submit-btn');
+            const originalBtnText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Enviando...';
+            }
+
+            fetch(targetUrl, {
                 method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            .then(async (response) => {
+                const data = await response.json().catch(() => ({}));
+
+                // CORRECCIÓN [Nivel Menor]:
+                // Error: Si Laravel devuelve errores de validación (HTTP 422), la propiedad 'data.errors' contiene
+                //        los detalles de cada campo, pero el código original solo leía data.message dejando al usuario sin saber qué falló.
+                // Solución: Manejar la respuesta verificando response.ok y formatear todos los mensajes de error de data.errors.
+                if (response.ok && data.success) {
                     alert('¡Gracias! Tu solicitud de empleo ha sido enviada correctamente.');
+                    form.reset();
+                    // Restablecer la fecha automática y el primer paso
+                    const todayDate = new Date().toISOString().split('T')[0];
+                    const fechaInput = document.getElementById('fecha_solicitud');
+                    if (fechaInput) {
+                        fechaInput.value = todayDate;
+                    }
+                    currentStep = 0;
+                    updateStepVisibility();
                 } else {
-                    alert('No se pudo registrar la solicitud: ' + (data.message || 'Error desconocido.'));
+                    let errorMsg = data.message || 'No se pudo registrar la solicitud.';
+                    if (data.errors) {
+                        const errorList = Object.values(data.errors).flat().join('\n• ');
+                        errorMsg += '\n\nDetalles:\n• ' + errorList;
+                    }
+                    alert(errorMsg);
                 }
             })
             .catch(error => {
-                alert('Error al conectar con el servidor: ' + error);
+                alert('Error al conectar con el servidor: ' + error.message);
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalBtnText;
+                }
             });
         });
