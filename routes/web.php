@@ -22,8 +22,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
-// Rutas Protegidas del Panel de Control (Requieren Inicio de Sesión)
-Route::middleware('auth')->group(function () {
+// Rutas Protegidas del Panel de Control (Requieren Inicio de Sesión + Control de Inactividad)
+Route::middleware(['auth', 'session.timeout'])->group(function () {
     // Panel de Solicitudes
     Route::get('/panel', [PanelSolicitudesController::class, 'index'])
         ->name('panel.index');

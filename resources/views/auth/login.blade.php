@@ -138,27 +138,6 @@
             margin-bottom: 20px;
         }
 
-        .credentials-help {
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px dashed var(--border-color);
-            font-size: 11px;
-            color: #64748b;
-        }
-
-        .credentials-help h4 {
-            font-size: 11px;
-            text-transform: uppercase;
-            color: var(--primary-color);
-            margin-bottom: 6px;
-        }
-
-        .credentials-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
     </style>
 </head>
 <body>
@@ -203,15 +182,6 @@
 
             <button type="submit" class="btn-submit">Ingresar al Panel</button>
         </form>
-
-        <div class="credentials-help">
-            <h4>Niveles de Acceso Disponibles:</h4>
-            <ul class="credentials-list">
-                <li>👑 <strong>Maestro (Desarrollador):</strong> maestro@lacour.com / maestro123</li>
-                <li>👔 <strong>Admin (Gerente):</strong> admin@lacour.com / admin123</li>
-                <li>👁️ <strong>Estándar (Visualizador):</strong> estandar@lacour.com / estandar123</li>
-            </ul>
-        </div>
     </div>
 
 </body>
