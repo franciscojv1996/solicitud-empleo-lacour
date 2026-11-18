@@ -167,7 +167,7 @@
             <div class="form-group">
                 <label for="email">Correo Electrónico:</label>
                 <input type="email" name="email" id="email" class="form-control" 
-                       value="{{ old('email') }}" required autofocus placeholder="usuario@lacour.com">
+                       value="{{ old('email') }}" required autofocus placeholder="usuario@grupolacour.com">
             </div>
 
             <div class="form-group">

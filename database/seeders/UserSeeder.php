@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     {
         // 1. Nivel Maestro (Desarrollador)
         User::updateOrCreate(
-            ['email' => 'maestro@lacour.com'],
+            ['email' => 'maestro@grupolacour.com'],
             [
                 'name' => 'Desarrollador Maestro',
                 'password' => Hash::make('maestro123'),
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
 
         // 2. Nivel Admin (Gerente)
         User::updateOrCreate(
-            ['email' => 'admin@lacour.com'],
+            ['email' => 'admin@grupolacour.com'],
             [
                 'name' => 'Gerente de Operaciones',
                 'password' => Hash::make('admin123'),
@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
 
         // 3. Nivel Estándar (Visualizador)
         User::updateOrCreate(
-            ['email' => 'estandar@lacour.com'],
+            ['email' => 'estandar@grupolacour.com'],
             [
                 'name' => 'Analista de Recursos Humanos',
                 'password' => Hash::make('estandar123'),

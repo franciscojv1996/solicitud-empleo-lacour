@@ -63,15 +63,6 @@
             box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
         }
 
-        .help-callout {
-            background-color: #f8fafc;
-            border-left: 3px solid var(--secondary-color);
-            padding: 10px 14px;
-            font-size: 12px;
-            color: #475569;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
     </style>
 </head>
 <body>
@@ -138,14 +129,6 @@
             <div class="card">
                 <h2>➕ Registrar Nuevo Usuario</h2>
 
-                <div class="help-callout">
-                    @if(Auth::user()->isMaestro())
-                        👑 <strong>Nivel Maestro:</strong> Puedes crear usuarios de cualquier nivel (Maestro, Administrador o Estándar).
-                    @elseif(Auth::user()->isAdmin())
-                        👔 <strong>Nivel Admin:</strong> Puedes crear Administradores y usuarios Estándar (no puedes crear nivel Maestro).
-                    @endif
-                </div>
-
                 <form action="{{ route('usuarios.store') }}" method="POST">
                     @csrf
 
@@ -158,7 +141,9 @@
                     <div class="form-group">
                         <label for="email">Correo Electrónico:</label>
                         <input type="email" name="email" id="email" class="form-control" 
-                               value="{{ old('email') }}" required placeholder="usuario@lacour.com">
+                               value="{{ old('email') }}" required placeholder="usuario@grupolacour.com"
+                               pattern="^[^@\s]+@grupolacour\.com$" title="Usa un correo que termine en @grupolacour.com">
+                        <small>Solo se permiten correos @grupolacour.com.</small>
                     </div>
 
                     <div class="form-group">

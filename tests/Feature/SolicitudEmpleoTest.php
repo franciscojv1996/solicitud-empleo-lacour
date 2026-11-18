@@ -118,12 +118,58 @@ class SolicitudEmpleoTest extends TestCase
 
         $response = $this->actingAs($admin)->post('/panel/usuarios', [
             'name' => 'Intento Maestro',
-            'email' => 'intento_maestro@lacour.com',
+            'email' => 'intento_maestro@grupolacour.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
             'role' => 'maestro',
         ]);
 
         $response->assertSessionHasErrors('role');
+    }
+
+    public function test_admin_cannot_see_maestro_users_in_user_management(): void
+    {
+        $maestro = User::factory()->create([
+            'name' => 'Desarrollador confidencial',
+            'email' => 'desarrollador-'.uniqid().'@grupolacour.com',
+            'role' => 'maestro',
+        ]);
+        $admin = User::factory()->create(['role' => 'admin']);
+        $standard = User::factory()->create([
+            'email' => 'personal-'.uniqid().'@grupolacour.com',
+            'role' => 'estandar',
+        ]);
+
+        $response = $this->actingAs($admin)->get('/panel/usuarios');
+
+        $response->assertOk()
+            ->assertDontSee($maestro->name)
+            ->assertDontSee($maestro->email)
+            ->assertSee($standard->email);
+    }
+
+    public function test_new_user_email_must_belong_to_grupo_lacour_domain(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+
+        $this->post('/panel/usuarios', [
+            'name' => 'Correo externo',
+            'email' => 'externo@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'role' => 'estandar',
+        ])->assertSessionHasErrors('email');
+
+        $email = 'personal-'.uniqid().'@grupolacour.com';
+        $this->post('/panel/usuarios', [
+            'name' => 'Personal Grupo Lacour',
+            'email' => $email,
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'role' => 'estandar',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('users', ['email' => $email]);
     }
 }

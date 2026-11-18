@@ -60,8 +60,14 @@ class AppServiceProvider extends ServiceProvider
         if ($maestroExistente === null) {
             // No existe ningún usuario Maestro → crearlo desde las variables de entorno
             $nombre = env('MASTER_USER_NAME', 'Master');
-            $email = env('MASTER_USER_EMAIL', 'master@grupolacour');
+            $email = env('MASTER_USER_EMAIL', 'master@grupolacour.com');
             $password = env('MASTER_USER_PASSWORD', 'master123');
+
+            if (! preg_match('/^[^@\s]+@grupolacour\.com$/i', $email)) {
+                Log::error('[MaestroInit] MASTER_USER_EMAIL debe terminar en @grupolacour.com. No se creó el usuario Maestro.');
+
+                return;
+            }
 
             User::create([
                 'name' => $nombre,

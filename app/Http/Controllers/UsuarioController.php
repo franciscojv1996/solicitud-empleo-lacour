@@ -24,7 +24,16 @@ class UsuarioController extends Controller
             abort(403, 'No tienes permisos para gestionar usuarios.');
         }
 
-        $usuarios = User::orderBy('id', 'asc')->get();
+        $usuarios = User::query()
+            ->when(
+                $currentUser->isAdmin(),
+                fn ($query) => $query->where(function ($query) {
+                    $query->whereNull('role')
+                        ->orWhere('role', '!=', 'maestro');
+                })
+            )
+            ->orderBy('id', 'asc')
+            ->get();
         $rolesPermitidos = $currentUser->creatableRoles();
 
         return view('panel.usuarios', compact('usuarios', 'rolesPermitidos', 'currentUser'));
@@ -45,12 +54,13 @@ class UsuarioController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:150',
-            'email' => 'required|email|max:150|unique:users,email',
+            'email' => ['required', 'email', 'max:150', 'unique:users,email', 'regex:/^[^@\s]+@grupolacour\.com$/i'],
             'password' => 'required|string|min:6|confirmed',
             'role' => ['required', 'string', Rule::in($rolesPermitidos)],
         ], [
             'name.required' => 'El nombre completo es obligatorio.',
             'email.required' => 'El correo electrónico es obligatorio.',
+            'email.regex' => 'El correo electrónico debe terminar en @grupolacour.com.',
             'email.unique' => 'Ya existe un usuario con este correo electrónico.',
             'password.required' => 'La contraseña es obligatoria.',
             'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
